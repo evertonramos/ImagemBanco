@@ -33,115 +33,80 @@ public class PostgreSQL {
     public void rollback() throws Exception {
         c.rollback();
     }
+    
+    private void setValue(int pos, Object object) throws Exception {
+        switch (object.getClass().getSimpleName()) {
+            case "String":
+            case "Character":
+                ps.setString(pos, object.toString().trim());
+                break;
+            case "Integer":
+                ps.setInt(pos, (Integer) object);
+                break;
+            case "Long":
+                ps.setLong(pos, (Long) object);
+                break;
+            case "Double":
+                ps.setDouble(pos, (Double) object);
+                break;
+            case "Float":
+                ps.setFloat(pos, (Float) object);
+                break;
+            case "FileInputStream":
+                ps.setBinaryStream(pos, (FileInputStream) object);
+                break;
+            default:
+                throw new Exception("Object class name not found: " + object.getClass().getSimpleName());
+        }
+    }
 
     public boolean execute(String sql, Object[] valores) throws Exception {
         ps = c.prepareStatement(sql);
 
         for (int i = 0; i < valores.length; i++) {
-            switch (valores[i].getClass().getSimpleName()) {
-                case "String":
-                    ps.setString(i + 1, valores[i].toString().trim());
-                    break;
-                case "Character":
-                    ps.setString(i + 1, valores[i].toString().trim());
-                    break;
-                case "Integer":
-                    ps.setInt(i + 1, (Integer) valores[i]);
-                    break;
-                case "Long":
-                    ps.setLong(i + 1, (Long) valores[i]);
-                    break;
-                case "Double":
-                    ps.setDouble(i + 1, (Double) valores[i]);
-                    break;
-                case "Float":
-                    ps.setFloat(i + 1, (Float) valores[i]);
-                    break;
-                case "FileInputStream":
-                    ps.setBinaryStream(i + 1, (FileInputStream) valores[i]);
-                    break;
-                default:
-                    throw new Exception("Execute/Tipo não encontrado: " + valores[i].getClass().getSimpleName());
-            }
+            setValue(i + 1, valores[i]);
         }
 
         return (ps.executeUpdate() > 0);
+    }
+
+    public boolean execute(String sql) throws Exception {
+        return execute(sql, new Object[0]);
     }
 
     public long insert(String sql, Object[] valores) throws Exception {
         ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
         for (int i = 0; i < valores.length; i++) {
-
-            switch (valores[i].getClass().getSimpleName()) {
-                case "String":
-                    ps.setString(i + 1, valores[i].toString().trim());
-                    break;
-                case "Character":
-                    ps.setString(i + 1, valores[i].toString().trim());
-                    break;
-                case "Integer":
-                    ps.setInt(i + 1, (Integer) valores[i]);
-                    break;
-                case "Long":
-                    ps.setLong(i + 1, (Long) valores[i]);
-                    break;
-                case "Double":
-                    ps.setDouble(i + 1, (Double) valores[i]);
-                    break;
-                case "Float":
-                    ps.setFloat(i + 1, (Float) valores[i]);
-                    break;
-                case "FileInputStream":
-                    ps.setBinaryStream(i + 1, (FileInputStream) valores[i]);
-                    break;
-                default:
-                    throw new Exception("Insert/Tipo não encontrado: " + valores[i].getClass().getSimpleName());
-            }
+            setValue(i + 1, valores[i]);
         }
 
         ps.executeUpdate();
 
         ResultSet rsID = ps.getGeneratedKeys();
 
-        while (rsID.next()) {
+        if (rsID.next()) {
             return rsID.getInt(1);
         }
 
         return 0;
     }
 
+    public long insert(String sql) throws Exception {
+        return insert(sql, new Object[0]);
+    }
+
     public ResultSet query(String sql, Object[] valores) throws Exception {
         ps = c.prepareStatement(sql);
 
         for (int i = 0; i < valores.length; i++) {
-            switch (valores[i].getClass().getSimpleName()) {
-                case "String":
-                    ps.setString(i + 1, valores[i].toString().trim());
-                    break;
-                case "Character":
-                    ps.setString(i + 1, valores[i].toString().trim());
-                    break;
-                case "Integer":
-                    ps.setInt(i + 1, (Integer) valores[i]);
-                    break;
-                case "Long":
-                    ps.setLong(i + 1, (Long) valores[i]);
-                    break;
-                case "Double":
-                    ps.setDouble(i + 1, (Double) valores[i]);
-                    break;
-                case "Float":
-                    ps.setFloat(i + 1, (Float) valores[i]);
-                    break;
-                case "FileInputStream":
-                    ps.setBinaryStream(i + 1, (FileInputStream) valores[i]);
-                    break;
-                default:
-                    throw new Exception("Query/Tipo não encontrado: " + valores[i].getClass().getSimpleName());
-            }
+            setValue(i + 1, valores[i]);
         }
 
         return ps.executeQuery();
+    }
+
+    public ResultSet query(String sql) throws Exception {
+        return query(sql, new Object[0]);
     }
 }
