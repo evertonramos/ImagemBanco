@@ -44,6 +44,13 @@ public class Main {
             2
         });
 
+        // altero o nome do id_teste 3
+        System.out.println("altero o nome do id_teste 3");
+        conexao.execute("update teste set nome = ? where id_teste = ?", new Object[]{
+            "nome alterado",
+            3
+        });
+        
         // gravo mais alguns dados
         System.out.println("gravo mais alguns dados");
 
