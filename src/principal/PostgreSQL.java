@@ -86,7 +86,7 @@ public class PostgreSQL {
         ResultSet rsID = ps.getGeneratedKeys();
 
         if (rsID.next()) {
-            return rsID.getInt(1);
+            return rsID.getLong(1);
         }
 
         return 0;
